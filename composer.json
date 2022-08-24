@@ -1,0 +1,26 @@
+{
+	"name": "hsk99/push-client",
+	"type": "library",
+	"keywords": [
+		"webman",
+		"push"
+	],
+	"license": "MIT",
+	"description": "push-client",
+	"authors": [
+		{
+			"name": "hsk99",
+			"email": "hsk@hsk99.com.cn",
+			"homepage": "http://hsk99.com.cn"
+		}
+	],
+	"require": {
+		"guzzlehttp/guzzle": "^7.2",
+		"monolog/monolog": "^2.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Hsk99\\PushClient\\": "src"
+		}
+	}
+}
