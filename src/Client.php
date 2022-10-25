@@ -35,6 +35,11 @@ class Client
     protected static $_secretKey = null;
 
     /**
+     * @var float
+     */
+    protected static $_timeout = 3;
+
+    /**
      * 私有频道鉴权
      *
      * @author HSK
@@ -153,13 +158,15 @@ class Client
         if (is_null(static::$_httpCLient)) {
             static::$_httpCLient = new \GuzzleHttp\Client([
                 'verify'  => false,
-                'timeout' => 1.5,
+                'timeout' => static::$_timeout,
             ]);
         }
 
         static::log('request', ['path' => $path, 'body' => $body]);
 
         try {
+            $signature = hash_hmac('sha256', json_encode($body, 320), static::$_secretKey, false);
+
             $response = static::$_httpCLient->request(
                 'POST',
                 static::$_serviceDomain . $path,
@@ -169,7 +176,7 @@ class Client
                         'Content-Type'      => 'multipart/form-data',
                         'Accept'            => 'application/json',
                         'X-hsk99-Key'       => static::$_accessKey,
-                        'X-hsk99-Signature' => hash_hmac('sha256', json_encode($body, 320), static::$_secretKey, false)
+                        'X-hsk99-Signature' => $signature
                     ]
                 ]
             );
@@ -239,6 +246,7 @@ class Client
         static::$_accessKey     = $config['access_key'] ?? null;
         static::$_secretKey     = $config['secret_key'] ?? null;
         static::$_logPath       = $config['log_path'] ?? null;
+        static::$_timeout       = $config['timeout'] ?? 3;
     }
 
     /**
@@ -257,6 +265,7 @@ class Client
             static::$_serviceDomain = config('plugin.hsk99.push-client.app.service_domain');
             static::$_accessKey     = config('plugin.hsk99.push-client.app.access_key');
             static::$_secretKey     = config('plugin.hsk99.push-client.app.secret_key');
+            static::$_timeout       = config('plugin.hsk99.push-client.app.timeout', 3);
         }
     }
 }
